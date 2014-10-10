@@ -9,6 +9,19 @@ import java.io.*;
  */
 public class Main 
 {
+    public class Node // I think we need a Node class
+    {
+        int data;
+        Node right;
+        Node left;
+        int numNodes = 0;
+        Node(int data)
+        {
+            this.data = data;
+            numNodes++;
+        }
+    }
+    
     public class kAry
     {
         //public int[] heap;
