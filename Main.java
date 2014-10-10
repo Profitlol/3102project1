@@ -2,7 +2,7 @@ package pkg3102hw;
 import java.util.*;
 import java.io.*;
 /**
- * @author Hunter Crossett and Stephen Truong
+ * @author Hunter Crossett and Steven Truong
  * @class CSC 3102 with Raul Shah Fall 2014
  * @purpose Implement K-ary heap and AVL Trees.
  * @naming Lots of puns. Please do not count off for pun variables.
@@ -11,7 +11,14 @@ public class Main
 {
     public class kAry
     {
-        public int[] somethingOrOther;
+        public int[] heap;
+        public int size;
+        public int x;
+        
+        public kAry(int x)
+        {
+            this.x = x;
+        }
         
         public void insert(int x) //key
         {
@@ -20,7 +27,11 @@ public class Main
         
         public int extractMin() //removes and returns the element of heap with the smallest key
         {
-            int min = 0;
+            int min = heap[0]; // sets min to first node
+            if (heap.length < 1)
+                return -1;
+            heap[0] = heap.length-1; // i am not sure here
+            
             return min;
         }
     }
