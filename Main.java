@@ -9,17 +9,30 @@ import java.io.*;
  */
 public class Main 
 {
+    public class Node // should i make something like Node(node , key)?
+    {
+        int data;
+        Node right = null;
+        Node left = null;
+        int numNodes = 0;
+        int height = 1;
+        Node(int data)
+        {
+            this.data = data;
+            numNodes++;
+        }
+    }
     public class kAry
     {
         //public int[] heap;
         public List<Integer> poop = new ArrayList<Integer>(); // lets try arraylist to add stuff
-        private int size;
-        private int x;
+        //private int size;
+        //private int x;
         
-        public kAry(int x)
-        {
-            this.x = x;
-        }
+        //PROBABLY DONT NEED THIS//public kAry(int x)
+        //{
+        //    this.x = x;
+        //}
         
         public void insert(Integer x) //key
     {
@@ -62,19 +75,82 @@ public class Main
     
     public class AVLtree 
     {
-        public AVLtree root; // the 1st node   
+        public Node root; // the 1st node   
+        public Node current;
         public List<Integer> gun = new ArrayList<Integer>(); // lets try arraylist to add stuff
-        public int avlsize;
+        //public int avlsize;
         
-        public AVLtree()        
+        // PROBABLY DONT NEED THIS //public AVLtree()        
+        //{
+        //    root = null;
+        //}
+        
+        public int balanceFact(Node current) // I WILL MAKE THESE TO MAKE MY LIFE EZ
         {
-            root = null;
+            if (current == null)
+                    return 0;
+            return(height(current.left) - height(current.right));
         }
         
-        public void insert(AVLtree x) //might need a Node*x and int somethign
+        public int height(Node current) // THIS TOO
         {
+            if (current == null)
+                return 0;
+            return current.height;
+        }
+        
+        public void insert(int data) //might need a Node*x and int somethign
+        {
+            Node node = new Node(data); // made some node
             if (root == null) // if theres nothing, add the new node
-                root = x;       
+                root = node;
+            else
+            {
+                current = root;
+                while (true) // this keeps going until 1 of those breaks, basic BST insert
+                {
+                    if (data < current.data)  // doing the left
+                    {
+                        if (current.left == null) // nothing, then add
+                        {
+                            current.left = node;
+                            break;
+                        }
+                        else
+                            current = current.left;
+                    }
+                    else
+                    {
+                        if (current.right == null) // doing the right, nothing then add
+                        {
+                            current.right = node;
+                            break;
+                        }
+                        else
+                            current = current.right;
+                    }
+                }
+            }
+            // time to fix the balance factors DOES THIS MAKE SENSE LOL
+            int bal = balanceFact(current);
+            //zig zig or left left
+            if (bal > 1 && data < current.left.data)
+                return ROTATE_RIGHT(current);  /// HAVE TO WRITE ROTATES
+            //zig zig or right right
+            if (bal < -1 && data > current.right.data)
+                return ROTATE_LEFT(current);
+            //zig zag || left right
+            if ( bal > 1 && data > current.left.data)
+            {
+               current.left = ROTATE_LEFT(current.left);
+               return ROTATE_RIGHT(current);
+            } 
+            //zig zag || right left
+            if ( bal < -1 && data < current.right.data)
+            {
+                current.right = ROTATE_RIGHT(current.right);
+                return ROTATE_LEFT(current);
+            }
             
         }
         
