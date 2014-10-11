@@ -9,24 +9,35 @@ import java.io.*;
  */
 public class Main 
 {
-    public class Node // should i make something like Node(node , key)?
+    public class Node 
     {
-        int data;
-        Node right = null;
-        Node left = null;
-        Node parent;        
-        int numNodes = 0;
-        int height = 1;
-        Node(int data)
+	public int x; // is key
+	public int bf;
+	public int height;
+	public Node parent;
+	public Node right;
+	public Node left;
+	public int size;
+	public int data;
+
+	public Node(int key) 
         {
-            this.data = data;
-            numNodes++;
-        }
-    }
+		this.x = x;
+		this.height=0;
+		this.bf=0;
+		this.size=1;
+	}
+    }    
     public class kAry
     {
         //public int[] heap;
         public List<Integer> poop = new ArrayList<Integer>(); // lets try arraylist to add stuff
+        public int x;
+        
+        public kAry(int x)
+        {
+            this.x = x;
+        }
                 
         public void insert(int x) //key
     {
@@ -87,11 +98,9 @@ public class Main
         }
         
         public Node minValue (Node current) // making life ez
-        {
-            
+        {            
             while (current.left != null)            
-                current = current.left;
-           
+                current = current.left;           
             return current;
         }
         
@@ -151,17 +160,25 @@ public class Main
         }
         
            
-        public boolean search(Node root, int x) //x = key
+        public boolean search(Node node, int x) //x = key
         {
-            // this shit is probaly wrong
+            // what teh fuck is going on. am i referencing this correctly
             if (node == null)
-                return false;
-            if 
-            return true;
+                return false; 
+            else
+            {
+                if( x > node.x)
+                    return search(node.right, x);
+                else if ( x < node.x)
+                    return search (node.left, x);
+                else
+                    return true;
+            }             
         }
         
-        public Node successor(Node root, Node x) //key
+        public Node successor(Node current, Node x)
         {
+            // IDK IF THIS IS RIGHT AS WELL
             if (current.right != null)  // if Rsub != null, succ in Rsub
                 return minValue (x.right);
             
@@ -177,9 +194,16 @@ public class Main
             return suc;
         }
         
-        public int select(int x) // key
+        public Node select(Node node, int g, int y) // do i need a # range g & y
         {
-            return 1;
+            //if lower bound <= root.size()
+                // look left, then return select(node.left, g, y)
+                // else if , go right ?
+                        // select( node.right, g, 1 + y + node.left.size)
+                // else return node???????????
+            //else
+                //return null
+            return null;
         }
         
         public int rank(int x) //x = key
