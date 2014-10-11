@@ -9,19 +9,37 @@ import java.io.*;
  */
 public class Main 
 {
+    public class Node 
+    {
+	public int x; // is key
+	public int bf;
+	public int height;
+	public Node parent;
+	public Node right;
+	public Node left;
+	public int size;
+	public int data;
+
+	public Node(int key) 
+        {
+		this.x = x;
+		this.height=0;
+		this.bf=0;
+		this.size=1;
+	}
+    }    
     public class kAry
     {
         //public int[] heap;
         public List<Integer> poop = new ArrayList<Integer>(); // lets try arraylist to add stuff
-        private int size;
-        private int x;
+        public int x;
         
         public kAry(int x)
         {
             this.x = x;
         }
-        
-        public void insert(Integer x) //key
+                
+        public void insert(int x) //key
     {
         poop.add(x); // add element to the end
         int m = poop.size()-1; // and find the location of that element
@@ -53,8 +71,7 @@ public class Main
             }
             // swap item/key w/ the child that has the lesser key 
         // repeat this until heap-order achieved
-        // return the item originally at root
-                       
+        // return the item originally at root                      
             
             return min;
         }
@@ -62,40 +79,131 @@ public class Main
     
     public class AVLtree 
     {
-        public AVLtree root; // the 1st node   
-        public List<Integer> gun = new ArrayList<Integer>(); // lets try arraylist to add stuff
-        public int avlsize;
+        public Node root; // the 1st node
+        public Node current;
+        public List<Integer> gun = new ArrayList<Integer>(); // lets try arraylist to add stuff  
         
-        public AVLtree()        
+        public int balanceFact(Node current) // making life ez
         {
-            root = null;
+            if (current == null)
+                    return 0;
+            return(height(current.left) - height(current.right));
         }
         
-        public void insert(AVLtree x) //might need a Node*x and int somethign
+        public int height(Node current) // making life ez
         {
+            if (current == null)
+                return 0;
+            return current.height;
+        }
+        
+        public Node minValue (Node current) // making life ez
+        {            
+            while (current.left != null)            
+                current = current.left;           
+            return current;
+        }
+        
+        public void insert(int data) //might need a Node*x and int somethign
+        {
+            Node node = new Node(data); // made some node
             if (root == null) // if theres nothing, add the new node
-                root = x;       
+                root = node;
+            else
+            {
+                current = root;
+                while (true) // this keeps going until 1 of those breaks
+                {
+                    if (data < current.data)  // doing the left
+                    {
+                        if (current.left == null) // nothing, then add
+                        {
+                            current.left = node;
+                            break;
+                        }
+                        else
+                            current = current.left;
+                    }
+                    else
+                    {
+                        if (current.right == null) // doing the right, nothing then add
+                        {
+                            current.right = node;
+                            break;
+                        }
+                        else
+                            current = current.right;
+                    }
+                }
+            }
+            // time to fix & check balance factors
+            int bal = balanceFact(current);
+            //zig zig or left left
+            if (bal > 1 && data < current.left.data)
+                return ROTATE_RIGHT(current);  /// HAVE TO RIGHT ROTATE
+            //zig zig or right right
+            if (bal < -1 && data > current.right.data)
+                return ROTATE_LEFT(current);
+            //zig zag || left right
+            if ( bal > 1 && data > current.left.data)
+            {
+               current.left = ROTATE_LEFT(current.left);
+               return ROTATE_RIGHT(current);
+            } 
+            //zig zag || right left
+            if ( bal < -1 && data < current.right.data)
+            {
+                current.right = ROTATE_RIGHT(current.right);
+                return ROTATE_LEFT(current);
+            }
             
         }
         
            
-        public boolean search(AVLtree root, int x) //x = key
+        public boolean search(Node node, int x) //x = key
         {
-            // this shit is probaly wrong
-            if (x == null)
-                return false;
-            if 
-            return true;
+            // what teh fuck is going on. am i referencing this correctly
+            if (node == null)
+                return false; 
+            else
+            {
+                if( x > node.x)
+                    return search(node.right, x);
+                else if ( x < node.x)
+                    return search (node.left, x);
+                else
+                    return true;
+            }             
         }
         
-        public int successor(int x) //key
+        public Node successor(Node current, Node x)
         {
-            return 1;
+            // IDK IF THIS IS RIGHT AS WELL
+            if (current.right != null)  // if Rsub != null, succ in Rsub
+                return minValue (x.right);
+            
+            //setting that node as the par & we start going up
+            //the parent pointer u ntil we see a node which is 
+            //Left child of it's parent. That parent node == successor.
+            Node suc = x.parent;
+            while( suc != null &&  x == suc.right) // is this right wtf
+            {
+                x = suc;
+                suc = suc.parent;
+            }
+            return suc;
         }
         
-        public int select(int x) // key
+        public Node select(Node node, int g, int y) // do i need a # range g & y
         {
-            return 1;
+            //if lower bound <= root.size()
+                // look left, then return select(node.left, g, y)
+                // else if , go right ?
+                        // select( node.right, g, 1 + y + node.left.size)
+                // else return node???????????
+            //else
+                //return null
+            return null;
         }
         
         public int rank(int x) //x = key
