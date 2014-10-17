@@ -11,15 +11,15 @@ public class Main
 {
     public class Node // should i make something like Node(node , key)?
     {
-        int data;
-        Node right;
-        Node left;
-        Node current;
-        Node parent;       
-        int height = 1;
+        private int data;
+        private Node right =null;
+        private Node left = null;
+        private Node parent = null;
+        private int bf = 0;
+        private int height;
         Node(int data)
         {
-            this.data = data;
+            this.data = data;           
         }
     }
     public class kAry
@@ -78,6 +78,8 @@ public class Main
             return(height(current.left) - height(current.right));
         }
         
+        /////////making a Balance function with the rotations. we will get rid of Height function & combine in Balance function
+        
         public int height(Node current) // making life ez
         {
             if (current == null)
@@ -96,20 +98,21 @@ public class Main
         
         public void insert(int data) //might need a Node*x and int somethign
         {
-            Node node = new Node(data); // made some node
+            Node newNode = new Node(data); // made some node
             if (root == null) // if theres nothing, add the new node
-                root = node;
+                root = newNode;
             else
             {
                 current = root;
-                while (true) // this keeps going until 1 of those breaks
+                boolean placement = true;
+                while (placement) // this keeps going until 1 of those breaks
                 {
-                    if (data < current.data)  // doing the left
+                    if (newNode.data < current.data)  // doing the left
                     {
                         if (current.left == null) // nothing, then add
                         {
-                            current.left = node;
-                            break;
+                            current.left = newNode;
+                            placement = false;
                         }
                         else
                             current = current.left;
@@ -118,8 +121,8 @@ public class Main
                     {
                         if (current.right == null) // doing the right, nothing then add
                         {
-                            current.right = node;
-                            break;
+                            current.right = newNode;
+                            placement = false;
                         }
                         else
                             current = current.right;
@@ -127,21 +130,21 @@ public class Main
                 }
             }
             // time to fix & check balance factors
-            int bal = balanceFact(current);
+            int bf = balanceFact(current);
             //zig zig or left left
-            if (bal > 1 && data < current.left.data)
+            if (bf > 1 && data < current.left.data)
                 return ROTATE_RIGHT(current);  /// HAVE TO RIGHT ROTATE
             //zig zig or right right
-            if (bal < -1 && data > current.right.data)
+            if (bf < -1 && data > current.right.data)
                 return ROTATE_LEFT(current);
             //zig zag || left right
-            if ( bal > 1 && data > current.left.data)
+            if ( bf > 1 && data > current.left.data)
             {
                current.left = ROTATE_LEFT(current.left);
                return ROTATE_RIGHT(current);
             } 
             //zig zag || right left
-            if ( bal < -1 && data < current.right.data)
+            if ( bf < -1 && data < current.right.data)
             {
                 current.right = ROTATE_RIGHT(current.right);
                 return ROTATE_LEFT(current);
