@@ -12,15 +12,14 @@ public class Main
     public class Node // should i make something like Node(node , key)?
     {
         int data;
-        Node right = null;
-        Node left = null;
-        Node parent;        
-        int numNodes = 0;
+        Node right;
+        Node left;
+        Node current;
+        Node parent;       
         int height = 1;
         Node(int data)
         {
             this.data = data;
-            numNodes++;
         }
     }
     public class kAry
@@ -177,15 +176,23 @@ public class Main
             return suc;
         }
         
-        public int select(int x) // key
+        public int rank(Node x, int k) // what is size & how to call
         {
-            return 1;
+        if (x == null) return 0;
+        if (k < x.data) return (rank(x.left, k));
+        if (k == x.data) return (x.left.size()+1); // need to define size
+		return (x.left.size+1+rank(x.right,k));        
         }
-        
-        public int rank(int x) //x = key
-        {
-            return 1;
-        }
+	
+	    public Node Select(Node x, int i)
+	    {
+		if (x == null) return null;
+		if (x.left.size+1 >= i)
+			return Select(x.left, i);
+		if (x.left.size+1 == i)
+			return x;
+		return Select(x.right, i-1-(x.left.size));
+	    }
         
     }
     
