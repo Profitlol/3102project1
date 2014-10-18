@@ -78,32 +78,118 @@ public class Main {
 
         public Node root; // the 1st node
         public Node current;
-        public List<Integer> gun = new ArrayList<Integer>(); // lets try arraylist to add stuff  
+        
 
-        public int balanceFact(Node current) // making life ez
+        public void updateBalance(Node x)
         {
-            if (current == null) {
-                return 0;
-            }
-            return (height(current.left) - height(current.right));
+            int left, right;
+            if (x.left == null)
+                left = -1;
+            else
+                left = x.left.height;
+            if (x.right == null)
+                right = -1;
+            else
+                right = x.right.height;
+            x.balance = left - right;
+            x.height = Math.max(left, right) +1;
         }
-
-        public int height(Node current) // making life ez
+        
+        public void rotateLeft(Node x) 
+        { // can you verify the pointers are correct
+		Node y = x.right;
+		x.right = null;
+		if (y.left != null) 
+                {
+			Node z = y.left;
+			y.left = null;
+			z.parent = x;
+			x.right = z;
+		}
+		if (x != root) 
+                {
+			y.parent = x.parent;
+			if (x.parent.left == x) 
+				y.parent.left = y;
+			else
+				y.parent.right = y;
+			
+		} else 
+                {
+			root = y;
+			y.parent = null;
+		}
+		x.parent = y;
+		y.left = x;
+		updateBalance(x);
+	}
+        
+        public void rotateRight(Node x) 
         {
-            if (current == null) {
-                return 0;
-            }
-            return current.height;
-        }
+		Node y = x.left;
+		x.left = null;
+		if (y.right != null) 
+                {
+			Node z = y.right;
+			y.right = null;
+			z.parent = x;
+			x.left = z;
+		}
+		if (x != root) 
+                {
+			y.parent = x.parent;
+			if (x.parent.left == x) 
+				y.parent.left = y;
+			else 
+				y.parent.right = y;			
+		} 
+                else 
+                {
+			root = y;
+			y.parent = null;
+		}
+		x.parent = y;
+		y.right = x;
+		updateBalance(x);
+	}
+        
+        public void whereRotate(Node x) {
+		// which subtree is tallest
+		if (x.balance < 0) {// negative, so we are looking at the right subtree
+			if (x.right.balance < 0) // Left Left rotation
+				rotateLeft(x);
+			else 
+                        {
+				rotateRight(x.right);
+				rotateLeft(x);
+			}
+		} else 
+                {// left subtree
+			if (x.left.balance > 0) 
+				rotateRight(x);
+			else 
+                        {
+				rotateLeft(x.left);
+				rotateRight(x);
+			}
+		}
+	}
 
-        public Node minValue(Node current) // making life ez
+        public Node minValue(Node x) // making life ez
         {
-
-            while (current.left != null) {
-                current = current.left;
-            }
-            return current;
+            if (x.left != null)
+                return minValue(x.left);
+            else
+                return x;
         }
+        
+        public Node maxValue(Node x) 
+        {
+		if (x.right != null) 
+			return maxValue(x.right);
+		else 
+			return x;
+	}
 
         public void insert(int data) //might need a Node*x and int somethign <= not in java!
         {
@@ -141,6 +227,8 @@ public class Main {
                     }
                 }
             }
+            ///// above might be correct, we just need to handle the 
+            ///// bottom stuff now
             // time to fix & check balance factors
             int bal = balanceFact(current);
             //zig zig or left left
@@ -163,72 +251,119 @@ public class Main {
 
         }
 
-        public void updateSize(Node x) {
-            do {
-                int left = (x.left != null) ? x.left.size : 0;
+        public void updateSize(Node x) 
+        {
+            do 
+            {
+                int left = (x.left != null) ? x.left.size : 0; 
+                // the ? just means if true first result : false second result
+                // i learned this today 10/18/14 on stackoverflow
+                // i hope i used this right
                 int right = (x.right != null) ? x.right.size : 0;
                 x.size = 1 + left + right;
                 x = x.parent;
             } while (x != null);
         }
 
-        public boolean search(Node node, int data) {
-            if (node != null) {
-                if (data > node.data) {
-                    return search(node.right, data);
-                } else if (data < node.data) {
-                    return search(node.left, data);
-                } else {
-                    return true;
-                }
+        public boolean search(Node x, int data) 
+        {
+            if (x != null) 
+            {
+                if (data > x.data) 
+                    return search(x.right, data);
+                else if (data < x.data)
+                    return search(x.left, data);
+                else 
+                    return true;                
             }
             return false;
         }
+        
+        public int rank(int data) 
+        {
+		Node min = minValue(root);
+		Node newNode = goGet(root, data);
+		int rank = 0;
+		while (newNode != null) 
+                {
+			Node pr = predecessor(newNode.data);
+			if (newNode.left != null) 
+                        {
+				rank += newNode.left.size + 1;
+				newNode = predecessor(minValue(newNode.left).data);
+			} 
+                        else if (pr != null && pr.left == null) 
+                        {
+				newNode = pr;
+				rank++;
+			} 
+                        else 
+                        {
+				newNode = pr;
+				rank++;
+			}
+		}
+		return rank;
+	}
 
-        public Node select(Node node, int i, int r) {
+        public Node select(Node x, int i, int r) 
+        { // its just like the slides
             if (i <= root.size) {
-                if (node.left != null && node.left.size + r >= i) {// look
-                    // left
-                    return select(node.left, i, r);
-                } else if ((node.left != null ? node.left.size : 0) + r + 1 < i) {
-                    return select(node.right, i, 1 + r + node.left.size);
+                if (x.left != null && x.left.size + r >= i) {
+                    // we're going left
+                    return select(x.left, i, r);
+                } else if ((x.left != null ? x.left.size : 0) + r + 1 < i) {
+                    return select(x.right, i, 1 + r + x.left.size);
                 } else {
-                    return node;
+                    return x;
                 }
             } else {
                 return null;// index i out of bounds
             }
         }
 
-        public Node successor(Node root, Node x) //key
+        public Node successor(int data) 
         {
-            if (current.right != null) // if Rsub != null, succ in Rsub
-            {
-                return minValue(x.right);
-            }
+		Node newNode = goGet(root, data);
+		if (newNode.right != null) // go down and right
+			return minValue(newNode.right);		
+		Node y = newNode.parent;
+		while (y != null && newNode == y.right) 
+                {
+			newNode = y;
+			y = y.parent;
+		}
+		return y;
+	}
 
-            //setting that node as the par & we start going up
-            //the parent pointer u ntil we see a node which is 
-            //Left child of it's parent. That parent node == successor.
-            Node suc = x.parent;
-            while (suc != null && x == suc.right) // is this right wtf
-            {
-                x = suc;
-                suc = suc.parent;
-            }
-            return suc;
-        }
-
-        public int select(int x) // key
+	public Node predecessor(int data) // i need this as well so i can mess 
+                //around with rotation
         {
-            return 1;
-        }
-
-        public int rank(int x) //x = key
-        {
-            return 1;
-        }
-
+		Node newNode = goGet(root, data);
+		if (newNode.left != null) // go down and right
+			return maxValue(newNode.left);		
+		Node y = newNode.parent;
+		while (y != null && newNode == y.left) 
+                {
+			newNode = y;
+			y = y.parent;
+		}
+		return y;
+	}
+        
+        private Node goGet(Node x, int data) {// i'm trying to make a function
+            //where i can just reutn a pointer or somemthing
+		if (x != null) 
+                {
+			if (data > x.data) 
+				return goGet(x.right, data);
+			else if (data < x.data) 
+				return goGet(x.left, data);
+			else 
+				return x;			
+		}
+		return x = null;
+	}
     }
 
     public static void main(String[] args) {
