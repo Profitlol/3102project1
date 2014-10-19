@@ -30,10 +30,15 @@ public class Main {
         }
     }
 
-    public class kAry {
-
-        //public int[] heap;
+    public class kAry 
+    {
+        private int x;
         public List<Integer> poop = new ArrayList<Integer>(); // lets try arraylist to add stuff
+        
+        public kAry(int x)
+        {
+            this.x = x;
+        }
 
         public void insert(int x) //key
         {
@@ -54,22 +59,45 @@ public class Main {
             }
         }
 
-        public Integer extractMin() //removes and returns the element of heap with the smallest key
+        public int extractMin() //removes and returns the element of heap with the smallest key
         {
             int min = poop.get(0); // sets min to first node
-            if (poop.size() <= 0) {
-                return -9999;
-            }
-            if (poop.size() == 1) {
-                poop.remove(0);
-            } else {
+            if (poop.size() <= 0)
+                return -9999;            
+            if (poop.size() == 1) 
+                poop.remove(0);             
+            else 
+            {
+                // swap item/key w/ the child that has the lesser key 
+                // repeat this until heap-order achieved
+                // return the item originally at root                    
                 poop.set(0, poop.get(poop.size() - 1));
                 poop.remove(poop.size() - 1);
-            }
-            // swap item/key w/ the child that has the lesser key 
-            // repeat this until heap-order achieved
-            // return the item originally at root                      
-
+                int fin = 0;
+                int node = 0;
+                while (fin == 0) 
+                {
+                int minchild = 1;
+                fin = 1;
+                for (int j = 1; j <= x; j++) 
+                {
+                    if ((node * x + j) >= poop.size()) 
+                        break;                    
+                    if (poop.get(node * x + j) < poop.get(node * x + minchild)) 
+                        minchild = j;                    
+                }
+                if ((node * x + 1) >= poop.size()) 
+                    break;                
+                if (poop.get(node * x + minchild) < poop.get(node)) 
+                {
+                    fin = 0;
+                    int temp = poop.get(node);
+                    poop.set(node, poop.get(node * x + minchild));
+                    poop.set(node * x + minchild, temp);
+                }
+                node = node * x + minchild;
+                }
+            }  
             return min;
         }
     }
