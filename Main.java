@@ -77,7 +77,8 @@ public class Main {
     public class AVLtree {
 
         public Node root; // the 1st node
-        public Node current;
+        public boolean heightChange = false;
+        //public Node current;
         
 
         public void updateBalance(Node x)
@@ -94,6 +95,16 @@ public class Main {
             x.balance = left - right;
             x.height = Math.max(left, right) +1;
         }
+        
+        public void siftUp(Node x) 
+        {
+		updateBalance(x);
+		if (Math.abs(x.balance) == 2) 
+			whereRotate(x);
+		while (x != root && heightChange == true)			
+			siftUp(x.parent);
+		heightChange = false;
+	}
         
         public void rotateLeft(Node x) 
         { // can you verify the pointers are correct
@@ -191,66 +202,85 @@ public class Main {
 			return x;
 	}
 
-        public void insert(int data) //might need a Node*x and int somethign <= not in java!
+        public void insert(Node x, int data) //ADDED NODE X
+                // X REPLACED CURRENT
         {
             Node newNode = new Node(data); // made a new node
             if (root == null) // if theres nothing, add the new nod
             {
                 root = newNode; //updates root.
                 newNode.height = 1; // root has height 1                
-            } else {
-                current = root;
+            } 
+            else 
+            {
+                x = root;
                 boolean placement = true;
                 while (placement) // this keeps going until 1 of these breaks
                 {
-                    if (newNode.data < current.data) // doing the left
+                    if (newNode.data < x.data) // doing the left
                     {
-                        if (current.left == null) // nothing, then add
+                        if (x.left == null) // nothing, then add
                         {
-                            current.left = newNode;
+                            x.left = newNode;
                             placement = false;
-                            newNode.parent = current;
+                            newNode.parent = x;
                             newNode.height = newNode.parent.height + 1;
-                        } else {
-                            current = current.left;
-                        }
-                    } else {
-                        if (current.right == null) // doing the right, nothing then add
+                            
+                            // gotta put bf checks in here 
+                            if(newNode.balance == 1) 
+                            // the siftUp only happens when heightChange = true
+                                heightChange = false;
+                            else if (newNode.balance == -1)
+                                // right heavy tree, need a left rotation
+                            {
+                                heightChange = true;
+                                rotateLeft(newNode);
+                                heightChange = false;
+                            }
+                            else if (newNode.balance == 0)
+                                // single left rotation
+                                heightChange = true;                                                           
+                        } 
+                        else 
+                            x = x.left;                        
+                    } 
+                    else 
+                    {
+                        if (x.right == null) // doing the right, nothing then add
                         {
-                            current.right = newNode;
+                            x.right = newNode;
                             placement = false;
-                            newNode.parent = current;
+                            newNode.parent = x;
                             newNode.height = newNode.parent.height + 1;
-                        } else {
-                            current = current.right;
-                        }
+                            
+                            //balance checks here
+                            if(newNode.balance == 1) 
+                            // the siftUp only happens when heightChange = true
+                                heightChange = false;
+                            else if (newNode.balance == -1)
+                                // right heavy tree, need a left rotation
+                            {
+                                heightChange = true;
+                                rotateLeft(newNode);
+                                heightChange = false;
+                            }
+                            else if (newNode.balance == 0)
+                                // single left rotation
+                                heightChange = true;
+                        } 
+                        else 
+                            x = x.right;                        
                     }
                 }
-            }
-            ///// above might be correct, we just need to handle the 
-            ///// bottom stuff now
-            // time to fix & check balance factors
-            int bal = balanceFact(current);
-            //zig zig or left left
-            if (bal > 1 && data < current.left.data) {
-                return ROTATE_RIGHT(current);  /// HAVE TO RIGHT ROTATE
-            }            //zig zig or right right
-            if (bal < -1 && data > current.right.data) {
-                return ROTATE_LEFT(current);
-            }
-            //zig zag || left right
-            if (bal > 1 && data > current.left.data) {
-                current.left = ROTATE_LEFT(current.left);
-                return ROTATE_RIGHT(current);
-            }
-            //zig zag || right left
-            if (bal < -1 && data < current.right.data) {
-                current.right = ROTATE_RIGHT(current.right);
-                return ROTATE_LEFT(current);
-            }
-
+                if (heightChange = true) 
+                // updates everything when inserted. i think?
+                {
+                siftUp(newNode);
+                updateSize(newNode);
+                }
+            }         
         }
-
+        
         public void updateSize(Node x) 
         {
             do 
