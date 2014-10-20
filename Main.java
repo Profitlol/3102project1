@@ -11,9 +11,8 @@ import java.io.*;
  */
 public class Main {
 
-    public class Node // should i make something like Node(node , key)?
+    public class Node 
     {
-
         private int data;
         private Node right = null;
         private Node left = null;
