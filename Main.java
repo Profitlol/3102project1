@@ -22,7 +22,8 @@ public class Main {
         private int balance;
         private int size;
 
-        Node(int data) {
+        Node(int data) 
+        {
             this.data = data;
             this.height = 0;
             this.balance = 0;
@@ -40,6 +41,41 @@ public class Main {
             this.x = x;
         }
 
+//        public void siftDown(int index) {
+//            /* will cycle through all children of heap[index] */
+//            int min = index;
+//            for (int i = 1; i <= k; i++) {
+//                int childIndex = k * index + i;
+//                if (childIndex < size) { // index inside current heap
+//                    if (heap[childIndex] < heap[min]) {
+//                        min = childIndex;
+//                    }
+//                }
+//            }
+//            if (min != index) {
+//                swap(min, index);
+//                siftDown(min);
+//            }
+//        }
+//    }
+
+//        public int extractMin() throws FileNotFoundException {
+//            long startTime = System.nanoTime();
+//            int min = heap[0];
+//            heap[0] = heap[size - 1];
+//            size--;
+//            siftDown(0);
+//            long endTime = System.nanoTime();
+//            if (DEBUG) {
+//                System.out.println(min + " new min = " + heap[0]);
+//            }
+//            if (DEBUG) {
+//                System.out.println("ExtractMin Time = " + ((endTime - startTime) / 1000));
+//            }
+//            return min;
+//        }
+
+        
         public void insert(int x) //key
         {
             poop.add(x); // add element to the end
@@ -103,11 +139,9 @@ public class Main {
     }
 
     public class AVLtree {
-
+        
         public Node root; // the 1st node
         public boolean heightChange = false;
-        //public Node current;
-        
 
         public void updateBalance(Node x)
         {
@@ -151,9 +185,9 @@ public class Main {
 			if (x.parent.left == x) 
 				y.parent.left = y;
 			else
-				y.parent.right = y;
-			
-		} else 
+				y.parent.right = y;			
+		} 
+                else 
                 {
 			root = y;
 			y.parent = null;
@@ -192,7 +226,8 @@ public class Main {
 		updateBalance(x);
 	}
         
-        public void whereRotate(Node x) {
+        public void whereRotate(Node x) 
+        {
 		// which subtree is tallest
 		if (x.balance < 0) {// negative, so we are looking at the right subtree
 			if (x.right.balance < 0) // Left Left rotation
@@ -202,7 +237,8 @@ public class Main {
 				rotateRight(x.right);
 				rotateLeft(x);
 			}
-		} else 
+		} 
+                else 
                 {// left subtree
 			if (x.left.balance > 0) 
 				rotateRight(x);
@@ -366,18 +402,18 @@ public class Main {
 
         public Node select(Node x, int i, int r) 
         { // its just like the slides
-            if (i <= root.size) {
-                if (x.left != null && x.left.size + r >= i) {
+            if (i <= root.size) 
+            {
+                if (x.left != null && x.left.size + r >= i) 
                     // we're going left
-                    return select(x.left, i, r);
-                } else if ((x.left != null ? x.left.size : 0) + r + 1 < i) {
-                    return select(x.right, i, 1 + r + x.left.size);
-                } else {
-                    return x;
-                }
-            } else {
-                return null;// index i out of bounds
-            }
+                    return select(x.left, i, r); 
+                else if ((x.left != null ? x.left.size : 0) + r + 1 < i) 
+                    return select(x.right, i, 1 + r + x.left.size);                 
+                else 
+                    return x;                
+            } 
+            else 
+                return null;// index i out of bounds            
         }
 
         public Node successor(int data) 
@@ -427,6 +463,7 @@ public class Main {
     public static void main(String[] args) {
         boolean debugAVL = true;
         boolean debugKary = false;
+        AVLtree avl = new AVLtree();
         if (debugAVL) {
             try {
                 Scanner MRIscan = new Scanner(new File("AVLtree-input.txt"));
