@@ -13,13 +13,13 @@ public class Main {
 
     public class Node 
     {
-        private int data;
-        private Node right = null;
-        private Node left = null;
-        private Node parent = null;
-        private int height;
-        private int balance;
-        private int size;
+        public int data;
+        public Node right = null;
+        public Node left = null;
+        public Node parent = null;
+        public int height;
+        public int balance;
+        public int size;
 
         Node(int data) 
         {
@@ -399,17 +399,17 @@ public class Main {
 		return rank;
 	}
 
-        public Node select(Node x, int i, int r) 
+        public Node select(Node x, int i) 
         { // its just like the slides
             if (i <= root.size) 
             {
-                if (x.left != null && x.left.size + r >= i) 
+                if (x.left != null && x.left.size >= i) 
                     // we're going left
-                    return select(x.left, i, r); 
-                else if ((x.left != null ? x.left.size : 0) + r + 1 < i) 
-                    return select(x.right, i, 1 + r + x.left.size);                 
+                    return select(x.left, i); 
+                else if (x.left.size +1 == i)
+                    return x;                 
                 else 
-                    return x;                
+                    return select(x.right, i-1-(x.left.size));
             } 
             else 
                 return null;// index i out of bounds            
