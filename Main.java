@@ -1,5 +1,4 @@
 package pkg3102hw;
-
 import java.util.*;
 import java.io.*;
 
@@ -32,116 +31,100 @@ public class Main {
 
     public class kAry 
     {
-        private int x;
-        public List<Integer> poop = new ArrayList<Integer>(); // lets try arraylist to add stuff
+        private int heapSize;
+        private int[] heap;
+        private int k;
         
-        public kAry(int x)
-        {
-            this.x = x;
-        }
-
-//        public void siftDown(int index) {
-//            /* will cycle through all children of heap[index] */
-//            int min = index;
-//            for (int i = 1; i <= k; i++) {
-//                int childIndex = k * index + i;
-//                if (childIndex < size) { // index inside current heap
-//                    if (heap[childIndex] < heap[min]) {
-//                        min = childIndex;
-//                    }
-//                }
-//            }
-//            if (min != index) {
-//                swap(min, index);
-//                siftDown(min);
-//            }
-//        }
-//    }
-
-//        public int extractMin() throws FileNotFoundException {
-//            long startTime = System.nanoTime();
-//            int min = heap[0];
-//            heap[0] = heap[size - 1];
-//            size--;
-//            siftDown(0);
-//            long endTime = System.nanoTime();
-//            if (DEBUG) {
-//                System.out.println(min + " new min = " + heap[0]);
-//            }
-//            if (DEBUG) {
-//                System.out.println("ExtractMin Time = " + ((endTime - startTime) / 1000));
-//            }
-//            return min;
-//        }
-
         
-        public void insert(int x) //key
+        public kAry(int k)
+        {            
+            heap = new int [k];
+            heapSize = 0;
+        }
+        
+        public void insert(int index) //key
         {
-            poop.add(x); // add element to the end
-            int m = poop.size() - 1; // and find the location of that element
-            if (m == 0) {
-                return;
-            }
-            int index = ((int) Math.floor(((double) m - 1) / x)); // index of parent
-            //compare & swap parent until not bigger
-            while (m != 0 && (poop.get(m) < poop.get(index))) // comparing nodes, maybe theres a better way
+            if (heapSize == heap.length)
             {
-                int par = ((int) Math.floor(((double) m - 1) / x)); // the new node that will be swapped
-                int temp = poop.get(m);	// starting to swap stuff
-                poop.set(m, poop.get(par));
-                poop.set(par, temp);
-                m = par;
+                heap = new int[heapSize*2];
+            }
+            else
+            {
+                heapSize++;
+                heap[heapSize - 1 ] = index;
+                siftUp(heapSize -1);
+            }
+        }        
+        
+        private void siftUp(int index) 
+        {
+            int parentIndex;
+            int temp;
+            if (index != 0) 
+            {
+                  parentIndex = Math.floorDiv(index-1, k);
+                  if (heap[parentIndex] > heap[index]) 
+                  {
+                        temp = heap[parentIndex];
+                        heap[parentIndex] = heap[index];
+                        heap[index] = temp;
+                        siftUp(parentIndex);
+                  }
+            }
+      }
+
+        public void siftDown(int index) 
+        {
+            /* will cycle through all children of heap[index] */
+            int min = index;
+            for (int i = 1; i <= k; i++) 
+            {
+                int childIndex = k * index + i;
+                if (childIndex < heapSize) 
+                { // index inside current heap
+                    if (heap[childIndex] < heap[min]) 
+                    {
+                        min = childIndex;
+                    }
+                }
+            }
+            if (min != index) 
+            {
+                //swap & fix
+                int temp = heap[min];
+                heap[min] = heap[index];
+                heap[index] = temp;
+                siftDown(min);
             }
         }
+        
+        
 
-        public int extractMin() //removes and returns the element of heap with the smallest key
+        public int extractMin() throws FileNotFoundException 
         {
-            int min = poop.get(0); // sets min to first node
-            if (poop.size() <= 0)
-                return -9999;            
-            if (poop.size() == 1) 
-                poop.remove(0);             
-            else 
-            {
-                // swap item/key w/ the child that has the lesser key 
-                // repeat this until heap-order achieved
-                // return the item originally at root                    
-                poop.set(0, poop.get(poop.size() - 1));
-                poop.remove(poop.size() - 1);
-                int fin = 0;
-                int node = 0;
-                while (fin == 0) 
-                {
-                int minchild = 1;
-                fin = 1;
-                for (int j = 1; j <= x; j++) 
-                {
-                    if ((node * x + j) >= poop.size()) 
-                        break;                    
-                    if (poop.get(node * x + j) < poop.get(node * x + minchild)) 
-                        minchild = j;                    
-                }
-                if ((node * x + 1) >= poop.size()) 
-                    break;                
-                if (poop.get(node * x + minchild) < poop.get(node)) 
-                {
-                    fin = 0;
-                    int temp = poop.get(node);
-                    poop.set(node, poop.get(node * x + minchild));
-                    poop.set(node * x + minchild, temp);
-                }
-                node = node * x + minchild;
-                }
-            }  
+            long startTime = System.nanoTime();
+            int min = heap[0];
+            heap[0] = heap[heapSize - 1];
+            heapSize--;
+            siftDown(0);
+            long endTime = System.nanoTime();
+            boolean DEBUG = true; // w hat?
+            if (DEBUG) {
+                System.out.println(min + " new min = " + heap[0]);
+            }
+            if (DEBUG) {
+                System.out.println("ExtractMin Time = " + ((endTime - startTime) / 1000));
+            }
             return min;
-        }
-    }
+        }        
+        
+
 
     public class AVLtree {
         
         public Node root; // the 1st node
         public boolean heightChange = false;
-
+        
         public void updateBalance(Node x)
         {
             int left, right;
@@ -265,9 +248,10 @@ public class Main {
 			return x;
 	}
 
-        public void insert(Node x, int data) //ADDED NODE X
+        public void insert(int data) //ADDED NODE X
                 // X REPLACED CURRENT
         {
+            Node x;
             Node newNode = new Node(data); // made a new node
             if (root == null) // if theres nothing, add the new nod
             {
@@ -358,18 +342,25 @@ public class Main {
             } while (x != null);
         }
 
-        public boolean search(Node x, int data) 
+        public String search(int data) //is this better than using searc(node, data)?
         {
+            Node x = root;
             if (x != null) 
             {
                 if (data > x.data) 
-                    return search(x.right, data);
+                {
+                    x = x.right; 
+                    return search(data);
+                }
                 else if (data < x.data)
-                    return search(x.left, data);
+                {
+                    x = x.left;
+                    return search(data);
+                }
                 else 
-                    return true;                
+                    return "TRUE";                
             }
-            return false;
+            return "FALSE";
         }
         
         public int rank(int data) 
@@ -462,25 +453,35 @@ public class Main {
     public static void main(String[] args) {
         boolean debugAVL = true;
         boolean debugKary = false;
-        AVLtree avl = new AVLtree();
+        AVLtree avl = new AVLtree(); //wtf?
         if (debugAVL) {
             try {
                 Scanner MRIscan = new Scanner(new File("AVLtree-input.txt"));
-                while (MRIscan.hasNext()) {
-                    int[] treesome; //idk what I am doing
-                    String[] beans = MRIscan.next().split(" ");
-                    if (beans[0].equals("IN")) {
-                        treesome.insert(Integer.parseInt(beans[1]));//insert call
-                    } else if (beans[0].equals("SR")) {
-                        treesome.search(beans[1]);
-                    } else if (beans[0].equals("SC")) {
-                        treesome.successor(beans[1]);
-                    } else if (beans[0].equals("SE")) {
-                        treesome.search(beans[1]);
-                    } else {
-                        treesome.rank(beans[1]);
+                    String[] treesome = MRIscan.next().split(" "); // need to find a better way to read in file
+                    for (int j = 0; j < treesome.length; j++)
+                    {
+                        if (treesome[j].equals("IN")) 
+                        {
+                            avl.insert(Integer.parseInt(treesome[j+1])); j++; 
+                        }
+                        else if (treesome[j].equals("SR"))
+                        {
+                            avl.search(Integer.parseInt(treesome[j+1])); j++;
+                        }
+                        else if (treesome[j].equals("SC")) 
+                        {
+                            avl.successor(Integer.parseInt(treesome[j+1])); j++;
+                        }
+                        else if (treesome[j].equals("SE")) 
+                        {
+                            avl.search(Integer.parseInt(treesome[j+1])); j++;
+                        }
+                        else 
+                        {
+                            avl.rank(Integer.parseInt(treesome[j+1])); j++;
+                        }
                     }
-                }
+                
             } catch (FileNotFoundException e) {
                 System.out.println("This shit ain't here");
             }
